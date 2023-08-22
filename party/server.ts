@@ -5,6 +5,8 @@ import allWords from "./words";
 
 const MAX_ROOM_SIZE = 10;
 
+const MIN_ROOM_SIZE = 3;
+
 function reducer(
 	allState: { public: GameState; wordsSeen: number[] },
 	event: HandlerEvent<GameAction>
@@ -47,17 +49,21 @@ function reducer(
 				state.mode = { type: "waiting" };
 			} else {
 				const indexOfSender = state.playerOrder.indexOf(sender);
-				if (state.mode.type !== "waiting" && state.mode.guesser === sender) {
-					let newGuesserIndex = indexOfSender + 1;
-					if (newGuesserIndex >= state.playerOrder.length) {
-						newGuesserIndex = 0;
+				if (state.mode.type !== "waiting") {
+					if (Object.keys(state.players).length < MIN_ROOM_SIZE) {
+						state.mode = { type: "waiting" };
+					} else if (state.mode.guesser === sender) {
+						let newGuesserIndex = indexOfSender + 1;
+						if (newGuesserIndex >= state.playerOrder.length) {
+							newGuesserIndex = 0;
+						}
+						state.mode = {
+							type: "writing",
+							word: generateNewWord(),
+							guesser: state.playerOrder[newGuesserIndex],
+							clues: {},
+						};
 					}
-					state.mode = {
-						type: "writing",
-						word: state.mode.word,
-						guesser: state.playerOrder[newGuesserIndex],
-						clues: {},
-					};
 				}
 				state.playerOrder.splice(indexOfSender, 1);
 			}

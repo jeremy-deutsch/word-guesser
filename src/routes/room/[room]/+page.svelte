@@ -42,7 +42,9 @@
 			{/each}
 		</ul>
 
-		{#if $stateReadable.hostId === data.id}
+		{#if $stateReadable.playerOrder.length < 3}
+			<div class="instructions">You need at least 3 people to start.</div>
+		{:else if $stateReadable.hostId === data.id}
 			<PromiseButton
 				disabled={Object.keys($stateReadable.players).length < 3}
 				normalText="Start game"
